@@ -62,8 +62,8 @@ namespace BOLL7708
             window.ShowInTaskbar = onTaskbar;
         }
 
-        /*
-         * Description: Run this on Window_StateChanged()
+        /**
+         * Run this on Window_StateChanged()
          */
         public static void OnStateChange(Window window, bool onTaskbar)
         {
