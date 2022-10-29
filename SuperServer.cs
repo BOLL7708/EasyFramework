@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,9 @@ using CloseReason = SuperSocket.Channel.CloseReason;
 
 namespace BOLL7708;
 
+/**
+ * Add the Nuget package SuperSocket.WebSocket.Server 2.x
+ */
 public class SuperServer
 {
     public enum ServerStatus
@@ -24,7 +28,7 @@ public class SuperServer
     const int DEFAULT_PORT = 4040;
     const string DEFAULT_IP = "Any";
 
-    private IServer _server;
+    private IServer? _server;
 
     // We are getting crashes when loading sessions from _server directly so we also store sessions here.
     private readonly ConcurrentDictionary<string, WebSocketSession> _sessions = new(); 
@@ -36,7 +40,7 @@ public class SuperServer
 
     public Action<ServerStatus, int> StatusAction = (status, sessionCount) => { };
     public Action<WebSocketSession, string> MessageReceivedAction = (session, message) => { };
-    public Action<WebSocketSession, bool, string> StatusMessageAction = (session, statusType, value) => { };
+    public Action<WebSocketSession?, bool, string> StatusMessageAction = (session, statusType, value) => { };
 
     #endregion
 
@@ -94,7 +98,7 @@ public class SuperServer
     {
         if(session != null)
         {
-            _sessions.TryRemove(session.SessionID, out WebSocketSession oldSession);
+            _sessions.TryRemove(session.SessionID, out WebSocketSession? oldSession);
             var reasonName = Enum.GetName(typeof(CloseReason), reason);
             StatusMessageAction.Invoke(null, false, $"Session closed: {session.SessionID}, because: {reasonName}");
             StatusAction(ServerStatus.SessionCount, _sessions.Count);
@@ -129,6 +133,20 @@ public class SuperServer
         foreach (var session in _sessions.Values)
         {
             if (session != null) SendMessage(session, message);
+        }
+    }
+    public void SendMessageToOthers(string senderSessionID, string message)
+    {
+        foreach (var session in _sessions.Values)
+        {
+            if (session != null && session.SessionID != senderSessionID) SendMessage(session, message);
+        }
+    }
+    public void SendMessageToGroup(string[] sessionIDs, string message)
+    {
+        foreach (var session in _sessions.Values)
+        {
+            if (session != null && sessionIDs.Contains(session.SessionID)) SendMessage(session, message);
         }
     }
     #endregion
