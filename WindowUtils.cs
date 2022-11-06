@@ -18,8 +18,8 @@ namespace BOLL7708
          * - Properties.Resources.Logo.Clone() as System.Drawing.Icon;
          */
         private static System.Windows.Forms.NotifyIcon? _notifyIcon;
-        public static void CreateTrayIcon(Window window, System.Drawing.Icon icon, string appName) {
-            if (_notifyIcon != null) return;
+        public static void CreateTrayIcon(Window window, System.Drawing.Icon? icon, string appName) {
+            if (_notifyIcon != null || icon == null) return;
             _notifyIcon = new()
             {
                 Icon = icon,
@@ -27,10 +27,7 @@ namespace BOLL7708
             };
             _notifyIcon.Click += (sender, eventArgs) =>
             {
-                window.WindowState = WindowState.Normal;
-                window.ShowInTaskbar = true;
-                window.Show();
-                window.Activate();
+                Restore(window, true);
             };
             _notifyIcon.Visible = true;
         }
@@ -38,12 +35,16 @@ namespace BOLL7708
          * Run this on OnClosing(), override it on Window.
          */
         public static void DestroyTrayIcon() {
-            if (_notifyIcon != null) _notifyIcon.Dispose();
+            if (_notifyIcon != null)
+            {
+                _notifyIcon.Dispose();
+                _notifyIcon = null;
+            } 
         }
         // endregion
 
         // region Mutex
-        private static Mutex _mutex = null;
+        private static Mutex? _mutex = null;
         public static void CheckIfAlreadyRunning(string appName) {
             _mutex = new Mutex(true, appName, out bool createdNew);
             if (!createdNew)
@@ -60,13 +61,22 @@ namespace BOLL7708
         }
         // endregion
 
-        // region Minimize
+        // region Window State
         public static void Minimize(Window window, bool onTaskbar)
         {
             window.Hide();
+            window.WindowStyle = WindowStyle.ToolWindow;
             window.WindowState = WindowState.Minimized;
             window.ShowInTaskbar = onTaskbar;
-            window.Visibility = onTaskbar ? Visibility.Visible : Visibility.Hidden;
+        }
+
+        public static void Restore(Window window, bool onTaskbar)
+        {
+            window.WindowStyle = WindowStyle.ThreeDBorderWindow;
+            window.WindowState = WindowState.Normal;
+            window.ShowInTaskbar = true;
+            window.Show();
+            window.Activate();
         }
 
         /**
@@ -77,13 +87,12 @@ namespace BOLL7708
             switch (window.WindowState)
             {
                 case WindowState.Minimized: // For tray icon
+                    window.WindowStyle = WindowStyle.ToolWindow;
                     window.ShowInTaskbar = onTaskbar;
-                    window.Visibility = onTaskbar ? Visibility.Visible : Visibility.Hidden;
                     break; 
-                default: 
+                default:
+                    window.WindowStyle = WindowStyle.ThreeDBorderWindow;
                     window.ShowInTaskbar = true;
-                    window.Visibility = Visibility.Visible;
-                    window.Show(); 
                     break;
             }
         }
