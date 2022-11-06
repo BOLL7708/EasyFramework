@@ -13,12 +13,18 @@ namespace BOLL7708
     public static class WindowUtils
     {
         // region Tray Icon
-        private static System.Windows.Forms.NotifyIcon _notifyIcon;
+        /**
+         * Import an icon as a resource in the resource editor, then import it with the below:
+         * - Properties.Resources.Logo.Clone() as System.Drawing.Icon;
+         */
+        private static System.Windows.Forms.NotifyIcon? _notifyIcon;
         public static void CreateTrayIcon(Window window, System.Drawing.Icon icon, string appName) {
             if (_notifyIcon != null) return;
-            _notifyIcon = new();
-            _notifyIcon.Icon = icon;
-            _notifyIcon.Text = $"{appName}: Click to show";
+            _notifyIcon = new()
+            {
+                Icon = icon,
+                Text = $"{appName}: Click to show"
+            };
             _notifyIcon.Click += (sender, eventArgs) =>
             {
                 window.WindowState = WindowState.Normal;
