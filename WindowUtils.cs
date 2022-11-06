@@ -35,7 +35,7 @@ namespace BOLL7708
             _notifyIcon.Visible = true;
         }
         /**
-         * Run this on OnClosing()
+         * Run this on OnClosing(), override it on Window.
          */
         public static void DestroyTrayIcon() {
             if (_notifyIcon != null) _notifyIcon.Dispose();
@@ -66,20 +66,23 @@ namespace BOLL7708
             window.Hide();
             window.WindowState = WindowState.Minimized;
             window.ShowInTaskbar = onTaskbar;
+            window.Visibility = onTaskbar ? Visibility.Visible : Visibility.Hidden;
         }
 
         /**
-         * Run this on Window_StateChanged()
+         * Run this on OnStateChanged(), override it on Window.
          */
         public static void OnStateChange(Window window, bool onTaskbar)
         {
             switch (window.WindowState)
             {
                 case WindowState.Minimized: // For tray icon
-                    window.ShowInTaskbar = onTaskbar; 
+                    window.ShowInTaskbar = onTaskbar;
+                    window.Visibility = onTaskbar ? Visibility.Visible : Visibility.Hidden;
                     break; 
                 default: 
-                    window.ShowInTaskbar = true; 
+                    window.ShowInTaskbar = true;
+                    window.Visibility = Visibility.Visible;
                     window.Show(); 
                     break;
             }
