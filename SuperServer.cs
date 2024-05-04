@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SuperSocket;
+using SuperSocket.Server;
+using SuperSocket.Server.Abstractions;
+using SuperSocket.Server.Host;
 using SuperSocket.WebSocket.Server;
-using CloseReason = SuperSocket.Channel.CloseReason;
+using CloseReason = SuperSocket.Connection.CloseReason;
 
 namespace BOLL7708;
 
@@ -114,7 +116,7 @@ public class SuperServer
         {
             if ( _server == null || _server.State != ServerState.Started) return;
         } 
-        catch(System.ObjectDisposedException ex)
+        catch(ObjectDisposedException ex)
         {
             Debug.WriteLine(ex.Message);
             return;
