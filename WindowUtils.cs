@@ -24,7 +24,7 @@ namespace BOLL7708
         public static void CreateTrayIcon(Window window, System.Drawing.Icon? icon, string appName)
         {
             if (_notifyIcon != null || icon == null) return;
-            _notifyIcon = new()
+            _notifyIcon = new NotifyIcon
             {
                 Icon = icon,
                 Text = $"{appName}: Click to show"
@@ -49,7 +49,7 @@ namespace BOLL7708
 
         public static void CheckIfAlreadyRunning(string appName)
         {
-            _mutex = new Mutex(true, appName, out bool createdNew);
+            _mutex = new Mutex(true, appName, out var createdNew);
             if (createdNew) return;
             var mainWindow = System.Windows.Application.Current.MainWindow;
             if(mainWindow != null) {

@@ -4,13 +4,16 @@
         <TargetFramework>net8.0-windows</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="SuperSocket.Server" Version="2.0.0-beta.20.448"/>
-        <PackageReference Include="SuperSocket.WebSocket.Server" Version="2.0.0-beta.20.448"/>
+        <PackageReference Include="SuperSocket.WebSocket.Server" Version="2.0.0-beta.21"/>
         <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms"/>
         <FrameworkReference Include="Microsoft.WindowsDesktop.App"/>
+    </ItemGroup>
+
+    <ItemGroup>
     </ItemGroup>
 
 </Project>

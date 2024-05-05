@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 
+// ReSharper disable once CheckNamespace
 namespace BOLL7708
 {
     /// <summary>
@@ -7,25 +8,25 @@ namespace BOLL7708
     /// </summary>
     public partial class SingleInputDialog : Window
     {
-        public string labelText;
-        public string value;
+        public string LabelText;
+        public string Value;
         public SingleInputDialog(Window owner, string value, string labelText)
         {
             Owner = owner;
-            this.value = value;
-            this.labelText = $"{labelText}:";
+            this.Value = value;
+            this.LabelText = $"{labelText}:";
             InitializeComponent();
             Title = $"Set {labelText}";
-            labelValue.Content = this.labelText;
-            textBoxValue.Text = value;
-            textBoxValue.Focus();
-            textBoxValue.SelectAll();
+            LabelValue.Content = this.LabelText;
+            TextBoxValue.Text = value;
+            TextBoxValue.Focus();
+            TextBoxValue.SelectAll();
         }
 
         private void okButton_Click(object sender, RoutedEventArgs e)
         {
-            value = textBoxValue.Text;
-            DialogResult = value.Length > 0;
+            Value = TextBoxValue.Text;
+            DialogResult = Value.Length > 0;
         }
     }
 }
