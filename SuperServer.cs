@@ -8,8 +8,7 @@ using SuperSocket.Server.Host;
 using SuperSocket.WebSocket.Server;
 using CloseReason = SuperSocket.Connection.CloseReason;
 
-// ReSharper disable once CheckNamespace
-namespace BOLL7708;
+namespace EasyFramework;
 
 public class SuperServer
 {
@@ -29,7 +28,7 @@ public class SuperServer
     private IServer? _server;
 
     // We are getting crashes when loading sessions from _server directly so we also store sessions here.
-    private readonly ConcurrentDictionary<string, WebSocketSession?> _sessions = new(); 
+    private readonly ConcurrentDictionary<string, WebSocketSession?> _sessions = new();
 
     private int _deliveredCount = 0;
     private int _receivedCount = 0;
@@ -42,7 +41,9 @@ public class SuperServer
 
     #endregion
 
-    public SuperServer() {}
+    public SuperServer()
+    {
+    }
 
     #region Manage
 
@@ -61,13 +62,16 @@ public class SuperServer
     {
         if (_server != null)
         {
-            foreach (var sessionPair in _sessions) {
-                if(sessionPair.Value != null) await sessionPair.Value.CloseAsync();
+            foreach (var sessionPair in _sessions)
+            {
+                if (sessionPair.Value != null) await sessionPair.Value.CloseAsync();
             }
+
             await _server.StopAsync();
             await _server.DisposeAsync();
             _server = null;
         }
+
         StatusAction.Invoke(ServerStatus.Disconnected, 0);
     }
 
@@ -102,13 +106,14 @@ public class SuperServer
     #endregion
 
     #region Send
+
     public async void SendMessage(WebSocketSession session, string message)
     {
         try
         {
-            if ( _server is not { State: ServerState.Started }) return;
-        } 
-        catch(ObjectDisposedException ex)
+            if (_server is not { State: ServerState.Started }) return;
+        }
+        catch (ObjectDisposedException ex)
         {
             Debug.WriteLine(ex.Message);
             return;
@@ -122,6 +127,7 @@ public class SuperServer
         }
         else SendMessageToAll(message);
     }
+
     public void SendMessageToAll(string message)
     {
         foreach (var session in _sessions.Values)
@@ -129,6 +135,7 @@ public class SuperServer
             if (session != null) SendMessage(session, message);
         }
     }
+
     public void SendMessageToOthers(string senderSessionId, string message)
     {
         foreach (var session in _sessions.Values)
@@ -136,6 +143,7 @@ public class SuperServer
             if (session != null && session.SessionID != senderSessionId) SendMessage(session, message);
         }
     }
+
     public void SendMessageToGroup(string[] sessionIDs, string message)
     {
         foreach (var session in _sessions.Values)
@@ -143,6 +151,7 @@ public class SuperServer
             if (session != null && sessionIDs.Contains(session.SessionID)) SendMessage(session, message);
         }
     }
+
     #endregion
 
     #region BoilerPlate
@@ -179,7 +188,8 @@ public class SuperServer
             });
         });
 
-        hostBuilder.ConfigureErrorHandler((session, exception) => {
+        hostBuilder.ConfigureErrorHandler((session, exception) =>
+        {
             Debug.WriteLine($"Exception from Error Handler: {exception.Message}");
             return ValueTask.FromResult(false);
         });

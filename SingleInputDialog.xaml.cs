@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 
-// ReSharper disable once CheckNamespace
-namespace BOLL7708
+namespace EasyFramework
 {
     /// <summary>
     /// Interaction logic for SingleInputDialog.xaml
