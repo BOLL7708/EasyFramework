@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using System.Windows;
-using System.Windows.Forms;
+﻿using System.Windows;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
@@ -23,7 +21,7 @@ public static class WindowUtils
             Icon = icon,
             Text = $"{appName}: Click to show"
         };
-        _notifyIcon.Click += (sender, eventArgs) => { Restore(window, true); };
+        _notifyIcon.Click += (_, _) => { Restore(window, true); };
         _notifyIcon.Visible = true;
     }
 
@@ -39,7 +37,8 @@ public static class WindowUtils
     // endregion
 
     // region Mutex
-    private static Mutex? _mutex = null;
+    // ReSharper disable once NotAccessedField.Local
+    private static Mutex? _mutex;
 
     public static void CheckIfAlreadyRunning(string appName)
     {

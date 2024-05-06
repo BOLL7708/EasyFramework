@@ -27,23 +27,19 @@ public class SuperServer
 
     private IServer? _server;
 
-    // We are getting crashes when loading sessions from _server directly so we also store sessions here.
+    // We are getting crashes when loading sessions from _server directly, so we also store sessions here.
     private readonly ConcurrentDictionary<string, WebSocketSession?> _sessions = new();
 
-    private int _deliveredCount = 0;
-    private int _receivedCount = 0;
+    private int _deliveredCount;
+    private int _receivedCount;
 
     #region Actions
 
-    public Action<ServerStatus, int> StatusAction = (status, sessionCount) => { };
-    public Action<WebSocketSession?, string> MessageReceivedAction = (session, message) => { };
-    public Action<WebSocketSession?, bool, string> StatusMessageAction = (session, statusType, value) => { };
+    public Action<ServerStatus, int> StatusAction = (_, _) => { };
+    public Action<WebSocketSession?, string> MessageReceivedAction = (_, _) => { };
+    public Action<WebSocketSession?, bool, string> StatusMessageAction = (_, _, _) => { };
 
     #endregion
-
-    public SuperServer()
-    {
-    }
 
     #region Manage
 
@@ -97,7 +93,7 @@ public class SuperServer
     private void Server_SessionClosed(WebSocketSession? session, CloseReason reason)
     {
         if (session == null) return;
-        _sessions.TryRemove(session.SessionID, out var oldSession);
+        _sessions.TryRemove(session.SessionID, out var _);
         var reasonName = Enum.GetName(typeof(CloseReason), reason);
         StatusMessageAction.Invoke(null, false, $"Session closed: {session.SessionID}, because: {reasonName}");
         StatusAction(ServerStatus.SessionCount, _sessions.Count);
@@ -107,7 +103,7 @@ public class SuperServer
 
     #region Send
 
-    public async void SendMessage(WebSocketSession session, string message)
+    public async void SendMessage(WebSocketSession? session, string message)
     {
         try
         {
@@ -190,11 +186,11 @@ public class SuperServer
 
         hostBuilder.ConfigureErrorHandler((session, exception) =>
         {
-            Debug.WriteLine($"Exception from Error Handler: {exception.Message}");
+            Debug.WriteLine($"Exception from Error Handler: {exception.Message} from {session.SessionID}");
             return ValueTask.FromResult(false);
         });
 
-        hostBuilder.ConfigureLogging((hostCtx, loggingBuilder) => { loggingBuilder.AddConsole(); });
+        hostBuilder.ConfigureLogging((_, loggingBuilder) => { loggingBuilder.AddConsole(); });
 
         return hostBuilder.BuildAsServer();
     }
