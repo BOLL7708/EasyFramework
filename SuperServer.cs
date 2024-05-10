@@ -111,15 +111,23 @@ public class SuperServer
         }
         catch (ObjectDisposedException ex)
         {
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Could not access server: {ex.Message}");
             return;
         }
 
         if (session is { Handshaked: true })
         {
-            await session.SendAsync(message);
-            Interlocked.Increment(ref _deliveredCount);
-            StatusAction(ServerStatus.DeliveredCount, _deliveredCount);
+            try
+            {
+                await session.SendAsync(message);
+                Interlocked.Increment(ref _deliveredCount);
+                StatusAction(ServerStatus.DeliveredCount, _deliveredCount);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Try again here?
+                Debug.WriteLine($"Failed to send message: {ex.Message}");
+            }
         }
         else SendMessageToAll(message);
     }
