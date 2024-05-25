@@ -103,11 +103,27 @@ public class SuperServer
 
     #region Send
 
-    public async void SendMessage(WebSocketSession? session, string message)
+    /**
+     * Send a message to a single session if provided, otherwise it will send to all sessions.
+     */
+    public async Task SendMessageToSingleOrAll(WebSocketSession? session, string message)
+    {
+        if(session != null) await SendMessageSingle(session, message);
+        else await SendMessageToAll(message);
+    }
+    
+    /**
+     * Send a message to a single session.
+     */
+    public async Task SendMessageSingle(WebSocketSession session, string message)
     {
         try
         {
-            if (_server is not { State: ServerState.Started }) return;
+            if (_server is not { State: ServerState.Started }) 
+            {
+                Debug.WriteLine("Server has not started yet.");
+                return;
+            }
         }
         catch (ObjectDisposedException ex)
         {
@@ -129,31 +145,52 @@ public class SuperServer
                 Debug.WriteLine($"Failed to send message: {ex.Message}");
             }
         }
-        else SendMessageToAll(message);
-    }
-
-    public void SendMessageToAll(string message)
-    {
-        foreach (var session in _sessions.Values)
+        else
         {
-            if (session != null) SendMessage(session, message);
+            Debug.WriteLine("Session is not ready, missing handshake.");
         }
     }
 
-    public void SendMessageToOthers(string senderSessionId, string message)
+    /**
+     * Send a message to all sessions.
+     */
+    public async Task SendMessageToAll(string message)
     {
+        List<Task> tasks = [];
         foreach (var session in _sessions.Values)
         {
-            if (session != null && session.SessionID != senderSessionId) SendMessage(session, message);
+            if (session != null) tasks.Add(SendMessageSingle(session, message));
         }
+
+        await Task.WhenAll(tasks);
     }
 
-    public void SendMessageToGroup(string[] sessionIDs, string message)
+    /**
+     * Send a message to all sessions except the sender.
+     */
+    public async Task SendMessageToOthers(string senderSessionId, string message)
     {
+        List<Task> tasks = [];
         foreach (var session in _sessions.Values)
         {
-            if (session != null && sessionIDs.Contains(session.SessionID)) SendMessage(session, message);
+            if (session != null && session.SessionID != senderSessionId) tasks.Add(SendMessageSingle(session, message));
         }
+
+        await Task.WhenAll(tasks);
+    }
+
+    /**
+     * Send a message to a group of sessions.
+     */
+    public async Task SendMessageToGroup(string[] sessionIDs, string message)
+    {
+        List<Task> tasks = [];
+        foreach (var session in _sessions.Values)
+        {
+            if (session != null && sessionIDs.Contains(session.SessionID)) tasks.Add(SendMessageSingle(session, message));
+        }
+
+        await Task.WhenAll(tasks);
     }
 
     #endregion
