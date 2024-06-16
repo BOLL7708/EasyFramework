@@ -13,13 +13,13 @@ public static class WindowUtils
      */
     private static NotifyIcon? _notifyIcon;
 
-    public static void CreateTrayIcon(Window window, Icon? icon, string appName)
+    public static void CreateTrayIcon(Window window, Icon? icon, string appName, string version)
     {
         if (_notifyIcon != null || icon == null) return;
         _notifyIcon = new NotifyIcon
         {
             Icon = icon,
-            Text = $"{appName}: Click to show"
+            Text = $"Click to show {appName} {version}"
         };
         _notifyIcon.Click += (_, _) => { Restore(window, true); };
         _notifyIcon.Visible = true;
