@@ -17,8 +17,7 @@ public static class JsonOptions
         if (_initDone) return Instance;
         
         Instance.Converters.Add(new JsonStringEnumConverter());
-        // TODO: I suspect the below was only needed when the data was faulty, but not entirely sure.
-        // Instance.NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals;
+        Instance.NumberHandling = JsonNumberHandling.AllowReadingFromString;
         _initDone = true;
 
         return Instance;
