@@ -12,7 +12,7 @@
     <DockPanel>
         <StackPanel Orientation="Horizontal" Margin="5">
             <Button Name="ButtonCancel" IsCancel="True" Margin="5" Width="60" VerticalContentAlignment="Center">Cancel</Button>
-            <Label x:Name="LabelValue" HorizontalContentAlignment="Right" Content="Label"  Margin="5" Width="60" VerticalContentAlignment="Center"/>
+            <Label x:Name="LabelValue" HorizontalContentAlignment="Right" Content="Label"  Margin="5" MinWidth="60" VerticalContentAlignment="Center"/>
             <TextBox Name="TextBoxValue"  VerticalContentAlignment="Center" Margin="5" Width="60" >Value</TextBox>
             <Button Name="ButtonOk" IsDefault="True" Click="okButton_Click"  Margin="5" Width="60" VerticalContentAlignment="Center">OK</Button>
         </StackPanel>
