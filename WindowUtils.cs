@@ -21,7 +21,22 @@ public static class WindowUtils
             Icon = icon,
             Text = $"Click to show {appName} {version}"
         };
-        _notifyIcon.Click += (_, _) => { Restore(window, true); };
+        _notifyIcon.MouseClick += (_, evt) =>
+        {
+            if(evt.Button == MouseButtons.Left) Restore(window, true);
+        };
+        
+        _notifyIcon.ContextMenuStrip = new ContextMenuStrip(new System.ComponentModel.Container());
+        _notifyIcon.ContextMenuStrip.SuspendLayout();
+        var openMenuItem = new ToolStripMenuItem("Show");
+        openMenuItem.Click += (_, _) => Restore(window, true);
+        var exitMenuItem = new ToolStripMenuItem("Exit");
+        exitMenuItem.Click += (_, _) => Application.Current.Shutdown();
+        _notifyIcon.ContextMenuStrip.Items.Add(openMenuItem);
+        _notifyIcon.ContextMenuStrip.Items.Add(exitMenuItem);
+        _notifyIcon.ContextMenuStrip.Name = "NotifyIconContextMenu";
+        _notifyIcon.ContextMenuStrip.ResumeLayout(false);
+        
         _notifyIcon.Visible = true;
     }
 
