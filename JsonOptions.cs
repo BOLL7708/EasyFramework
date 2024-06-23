@@ -18,6 +18,7 @@ public static class JsonOptions
         
         Instance.Converters.Add(new JsonStringEnumConverter());
         Instance.NumberHandling = JsonNumberHandling.AllowReadingFromString;
+        Instance.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         _initDone = true;
 
         return Instance;
