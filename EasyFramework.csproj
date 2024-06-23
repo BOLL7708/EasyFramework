@@ -11,7 +11,7 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms"/>
-        <PackageReference Include="SuperSocket.WebSocket.Server" Version="2.0.0-beta.21"/>
+        <PackageReference Include="SuperSocket.WebSocket.Server" Version="2.0.0-beta.23" />
     </ItemGroup>
 
 </Project>

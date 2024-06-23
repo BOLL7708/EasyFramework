@@ -108,14 +108,14 @@ public class SuperServer
      */
     public async Task SendMessageToSingleOrAll(WebSocketSession? session, string message)
     {
-        if(session != null) await SendMessageSingle(session, message);
+        if(session != null) await SendMessageToSingle(session, message);
         else await SendMessageToAll(message);
     }
     
     /**
      * Send a message to a single session.
      */
-    public async Task SendMessageSingle(WebSocketSession session, string message)
+    public async Task SendMessageToSingle(WebSocketSession session, string message)
     {
         try
         {
@@ -159,7 +159,7 @@ public class SuperServer
         List<Task> tasks = [];
         foreach (var session in _sessions.Values)
         {
-            if (session != null) tasks.Add(SendMessageSingle(session, message));
+            if (session != null) tasks.Add(SendMessageToSingle(session, message));
         }
 
         await Task.WhenAll(tasks);
@@ -173,7 +173,7 @@ public class SuperServer
         List<Task> tasks = [];
         foreach (var session in _sessions.Values)
         {
-            if (session != null && session.SessionID != senderSessionId) tasks.Add(SendMessageSingle(session, message));
+            if (session != null && session.SessionID != senderSessionId) tasks.Add(SendMessageToSingle(session, message));
         }
 
         await Task.WhenAll(tasks);
@@ -187,7 +187,7 @@ public class SuperServer
         List<Task> tasks = [];
         foreach (var session in _sessions.Values)
         {
-            if (session != null && sessionIDs.Contains(session.SessionID)) tasks.Add(SendMessageSingle(session, message));
+            if (session != null && sessionIDs.Contains(session.SessionID)) tasks.Add(SendMessageToSingle(session, message));
         }
 
         await Task.WhenAll(tasks);
