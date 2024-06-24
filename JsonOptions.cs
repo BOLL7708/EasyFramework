@@ -8,7 +8,9 @@ public static class JsonOptions
     private static readonly JsonSerializerOptions Instance = new()
     {
         IncludeFields = true, 
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
+        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
     private static bool _initDone;
 
@@ -17,8 +19,6 @@ public static class JsonOptions
         if (_initDone) return Instance;
         
         Instance.Converters.Add(new JsonStringEnumConverter());
-        Instance.NumberHandling = JsonNumberHandling.AllowReadingFromString;
-        Instance.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         _initDone = true;
 
         return Instance;
