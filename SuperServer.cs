@@ -50,6 +50,7 @@ public class SuperServer
 
         // Start
         _server = BuildServer(port, ip);
+        _server.Options.MaxPackageLength = 100 * 1024 * 1024;
         await _server.StartAsync();
         StatusAction.Invoke(_server.State == ServerState.Started ? ServerStatus.Connected : ServerStatus.Error, 0);
     }
