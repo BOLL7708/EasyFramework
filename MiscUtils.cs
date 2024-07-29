@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace EasyFramework;
 
@@ -34,5 +36,12 @@ public static class MiscUtils
                 throw;
             }
         }
+    }
+
+    public static string HashPassword(string password)
+    {
+        var enc = Encoding.UTF8;
+        var hash = SHA256.HashData(enc.GetBytes(password));
+        return Convert.ToBase64String(hash);
     }
 }
