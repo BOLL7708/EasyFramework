@@ -44,4 +44,19 @@ public static class MiscUtils
         var hash = SHA256.HashData(enc.GetBytes(password));
         return Convert.ToBase64String(hash);
     }
+    
+    public static string HashMd5(string input) // https://stackoverflow.com/a/24031467
+    {
+        // Use input string to calculate MD5 hash
+        var inputBytes = Encoding.ASCII.GetBytes(input);
+        var hashBytes = MD5.HashData(inputBytes);
+
+        // Convert the byte array to hexadecimal string
+        var sb = new StringBuilder();
+        foreach (var t in hashBytes)
+        {
+            sb.Append(t.ToString("X2"));
+        }
+        return sb.ToString();
+    }
 }
